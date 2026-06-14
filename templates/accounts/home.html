@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Bosh sahifa - Global Chat{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
+    <div class="text-center text-white">
+        <h1 class="text-5xl font-bold mb-4">
+            <i class="fas fa-globe mr-3"></i>Global Chat
+        </h1>
+        <p class="text-xl mb-8">Dunyo bo'ylab odamlar bilan bog'lanish</p>
+        <div class="space-x-4">
+            <a href="{% url 'signup' %}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 inline-block">
+                Ro'yxatdan o'tish
+            </a>
+            <a href="{% url 'login' %}" class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-blue-600 inline-block">
+                Kirish
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

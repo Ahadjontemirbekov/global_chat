@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Global Chat{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden" style="height: 600px; display: flex; flex-direction: column;">
+        <!-- Chat Header -->
+        <div class="bg-blue-600 text-white p-4 border-b">
+            <h2 class="text-2xl font-bold">
+                <i class="fas fa-comments mr-2"></i>Global Chat
+            </h2>
+            <p class="text-sm text-blue-200">Hozir online: {{ user.username }}</p>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+            {% for message in messages %}
+                <div class="flex {% if message.sender == user %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="{% if message.sender == user %}bg-blue-500 text-white{% else %}bg-gray-300 text-gray-900{% endif %} rounded-lg px-4 py-2 max-w-xs">
+                        <p class="text-sm font-bold">{{ message.sender.username }}</p>
+                        <p>{{ message.content }}</p>
+                        <p class="text-xs mt-1 {% if message.sender == user %}text-blue-100{% else %}text-gray-600{% endif %}">
+                            {{ message.created_at|date:"H:i" }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Input Form -->
+        <div class="border-t p-4 bg-gray-50">
+            <form id="messageForm" class="flex space-x-2">
+                {% csrf_token %}
+                <input type="text" id="messageInput" placeholder="Xabaringizni yozing..." 
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       required>
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">
+                    <i class="fas fa-paper-plane mr-2"></i>Yuborish
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const messageForm = document.getElementById('messageForm');
+const messageInput = document.getElementById('messageInput');
+const messagesContainer = document.getElementById('messages');
+
+messageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = messageInput.value.trim();
+    
+    if (!content) return;
+    
+    try {
+        const response = await fetch('{% url "send_message" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ content })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            messageInput.value = '';
+            loadMessages();
+        }
+    } catch (error) {
+        console.error('Xato:', error);
+    }
+});
+
+async function loadMessages() {
+    try {
+        const response = await fetch('{% url "get_messages" %}');
+        const data = await response.json();
+        
+        messagesContainer.innerHTML = '';
+        
+        data.messages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${msg.is_owner ? 'justify-end' : 'justify-start'}`;
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `${msg.is_owner ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900'} rounded-lg px-4 py-2 max-w-xs`;
+            messageBubble.innerHTML = `
+                <p class="text-sm font-bold">${msg.sender}</p>
+                <p>${msg.content}</p>
+                <p class="text-xs mt-1 ${msg.is_owner ? 'text-blue-100' : 'text-gray-600'}">${msg.created_at}</p>
+            `;
+            
+            messageDiv.appendChild(messageBubble);
+            messagesContainer.appendChild(messageDiv);
+        });
+        
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } catch (error) {
+        console.error('Xato:', error);
+    }
+}
+
+// Har 2 soniyada xabarlarni yangilash
+setInterval(loadMessages, 2000);
+</script>
+{% endblock %}

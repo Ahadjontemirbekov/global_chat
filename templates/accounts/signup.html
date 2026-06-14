@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Ro'yxatdan o'tish - Global Chat{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 mt-10">
+    <h2 class="text-3xl font-bold mb-6 text-center">Ro'yxatdan o'tish</h2>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        
+        <div>
+            <label for="id_username" class="block text-gray-700 font-bold mb-2">Foydalanuvchi nomi:</label>
+            {{ form.username }}
+        </div>
+
+        <div>
+            <label for="id_email" class="block text-gray-700 font-bold mb-2">Email:</label>
+            {{ form.email }}
+        </div>
+
+        <div>
+            <label for="id_password1" class="block text-gray-700 font-bold mb-2">Parol:</label>
+            {{ form.password1 }}
+        </div>
+
+        <div>
+            <label for="id_password2" class="block text-gray-700 font-bold mb-2">Parolni tasdiqlang:</label>
+            {{ form.password2 }}
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700">
+            Ro'yxatdan o'tish
+        </button>
+    </form>
+    <p class="text-center mt-4 text-gray-600">
+        Allaqachon akkauntingiz bor? <a href="{% url 'login' %}" class="text-blue-600 font-bold">Kirish</a>
+    </p>
+</div>
+{% endblock %}

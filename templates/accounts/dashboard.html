@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Global Chat{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="md:col-span-2">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-4">Salom, {{ user.username }}! 👋</h2>
+            <p class="text-gray-600 mb-6">Dunyo bo'ylab odamlar bilan chatda gaplashing</p>
+            
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-4">So'nggi xabarlaringiz</h3>
+                {% if recent_messages %}
+                    <div class="space-y-3">
+                        {% for message in recent_messages %}
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <p class="text-gray-800">{{ message.content }}</p>
+                                <p class="text-sm text-gray-500 mt-2">{{ message.created_at }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-600">Hali xabar yubormagansiz</p>
+                {% endif %}
+            </div>
+
+            <a href="{% url 'chat' %}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">
+                Chat-ga o'tish
+            </a>
+        </div>
+    </div>
+
+    <div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-bold mb-4">Foydalanuvchilar</h3>
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+                {% for profile in all_users %}
+                    <div class="flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
+                        <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="font-bold">{{ profile.user.username }}</p>
+                            <p class="text-sm text-gray-600">{{ profile.user.first_name }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
